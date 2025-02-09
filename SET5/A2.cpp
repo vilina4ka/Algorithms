@@ -16,7 +16,7 @@ private:
 
     size_t M;
     std::vector<Value> table;
-    int collisions = 0;  // Счетчик коллизий
+    int collisions = 0;  
 
     [[nodiscard]] size_t get_hash(int key) const {
         return key % M;
@@ -25,7 +25,6 @@ private:
 public:
     explicit HashTable(size_t size) : M(size), table(size) {}
 
-    // Квадратичное пробирование: h(k, i) = h(k) + i + i^2
     bool quadratic_insert(int key) {
         size_t hash = get_hash(key);
         for (size_t i = 0; i < M; ++i) {
@@ -37,12 +36,11 @@ public:
                 table[index] = Value(key);
                 return true;
             }
-            collisions++;  // Коллизия произошла
+            collisions++;  
         }
         return false;
     }
 
-    // Кубическое пробирование: h(k, i) = h(k) + i + i^2 + i^3
     bool cubic_insert(int key) {
         size_t hash = get_hash(key);
         for (size_t i = 0; i < M; ++i) {
@@ -54,12 +52,11 @@ public:
                 table[index] = Value(key);
                 return true;
             }
-            collisions++;  // Коллизия произошла
+            collisions++; 
         }
         return false;
     }
 
-    // Подсчет кластеров (групп непрерывных занятых ячеек)
     int count_clusters() const {
         int clusters = 0;
         bool in_cluster = false;
@@ -81,7 +78,7 @@ public:
     }
 };
 
-// Функция тестирования на заданном уровне заполнения
+
 void test_hashing(size_t size, double fill_factor, int iterations, std::ofstream& output) {
     std::cout << "Table size: " << size << ", Fill factor: " << fill_factor * 100 << "%" << std::endl;
 
@@ -101,7 +98,6 @@ void test_hashing(size_t size, double fill_factor, int iterations, std::ofstream
         int inserted = 0;
         int key;
 
-        // Кубическое пробирование
         auto start = std::chrono::high_resolution_clock::now();
         while (inserted < max_insertions) {
             key = unif(rand_engine);
@@ -115,7 +111,6 @@ void test_hashing(size_t size, double fill_factor, int iterations, std::ofstream
         cubic_clusters.push_back(cubicTable.count_clusters());
         cubic_collisions.push_back(cubicTable.get_collisions());
 
-        // Квадратичное пробирование
         inserted = 0;
         start = std::chrono::high_resolution_clock::now();
         while (inserted < max_insertions) {
@@ -131,7 +126,6 @@ void test_hashing(size_t size, double fill_factor, int iterations, std::ofstream
         quadratic_collisions.push_back(quadraticTable.get_collisions());
     }
 
-    // Усреднение значений
     double avg_cubic_time = std::accumulate(cubic_times.begin(), cubic_times.end(), 0.0) / iterations;
     double avg_quadratic_time = std::accumulate(quadratic_times.begin(), quadratic_times.end(), 0.0) / iterations;
     double avg_cubic_clusters = std::accumulate(cubic_clusters.begin(), cubic_clusters.end(), 0.0) / iterations;
@@ -139,7 +133,6 @@ void test_hashing(size_t size, double fill_factor, int iterations, std::ofstream
     double avg_cubic_collisions = std::accumulate(cubic_collisions.begin(), cubic_collisions.end(), 0.0) / iterations;
     double avg_quadratic_collisions = std::accumulate(quadratic_collisions.begin(), quadratic_collisions.end(), 0.0) / iterations;
 
-    // Вывод результатов в консоль
     std::cout << "Cubic Probing (avg over " << iterations << " runs):" << std::endl;
     std::cout << "  Avg Time: " << avg_cubic_time << " sec" << std::endl;
     std::cout << "  Avg Clusters: " << avg_cubic_clusters << std::endl;
@@ -152,20 +145,18 @@ void test_hashing(size_t size, double fill_factor, int iterations, std::ofstream
 
     std::cout << "---------------------------------------\n";
 
-    // Запись данных в файл
     output << size << "," << fill_factor << "," << avg_cubic_time << "," << avg_quadratic_time << ","
            << avg_cubic_clusters << "," << avg_quadratic_clusters << ","
            << avg_cubic_collisions << "," << avg_quadratic_collisions << "\n";
 }
 
-// Главная функция
 int main() {
     std::ofstream output("results.csv");
     output << "Size,FillFactor,CubicTime,QuadraticTime,CubicClusters,QuadraticClusters,CubicCollisions,QuadraticCollisions\n";
 
-    size_t test_sizes[] = {23, 101, 503, 1009};  // Размеры таблицы
-    double fill_factors[] = {0.3, 0.4, 0.5, 0.6, 0.7}; // Уровни заполнения
-    int iterations = 30;  // Количество итераций
+    size_t test_sizes[] = {23, 101, 503, 1009};  
+    double fill_factors[] = {0.3, 0.4, 0.5, 0.6, 0.7}; 
+    int iterations = 30;  
 
     for (size_t size : test_sizes) {
         for (double fill_factor : fill_factors) {
